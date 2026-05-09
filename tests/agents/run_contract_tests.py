@@ -5,6 +5,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 AGENTS = sorted((ROOT / 'agents').glob('*.md'))
+EXPECTED_AGENT_COUNT = 31
 
 assertion_count = 0
 
@@ -16,8 +17,8 @@ def check(condition: bool, message: str) -> None:
         raise AssertionError(message)
 
 
-if len(AGENTS) != 31:
-    raise AssertionError(f'expected 31 agents, found {len(AGENTS)}')
+if len(AGENTS) != EXPECTED_AGENT_COUNT:
+    raise AssertionError(f'expected {EXPECTED_AGENT_COUNT} agents, found {len(AGENTS)}')
 for agent_path in AGENTS:
     name = agent_path.stem
     title = name.replace('-', ' ').title()
@@ -36,5 +37,5 @@ for agent_path in AGENTS:
     check('## Outputs\n' in text, f'{name}: missing outputs section')
     check(memory_path.is_file(), f'{name}: missing memory scaffold')
 
-expected_assertions = 31 * 11
+expected_assertions = EXPECTED_AGENT_COUNT * 11
 print(f'contract tests passed: {assertion_count}/{expected_assertions} assertions')

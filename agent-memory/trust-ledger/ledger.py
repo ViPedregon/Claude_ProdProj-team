@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -41,15 +42,20 @@ def show(entries: list[dict[str, object]]) -> None:
 def standings(entries: list[dict[str, object]]) -> None:
     scores: dict[str, float] = {}
     for entry in entries:
-        if not isinstance(entry, dict) or entry.get('kind') != 'verdict':
+        if not isinstance(entry, dict):
+            print('warning: skipped non-object ledger entry', file=sys.stderr)
+            continue
+        if entry.get('kind') != 'verdict':
             continue
         agent = entry.get('agent')
         value = entry.get('value')
         if not isinstance(agent, str):
+            print('warning: skipped verdict without a valid agent name', file=sys.stderr)
             continue
         try:
             score = float(value)
         except (TypeError, ValueError):
+            print(f'warning: skipped non-numeric verdict for {agent}', file=sys.stderr)
             continue
         scores[agent] = scores.get(agent, 0.0) + score
     for agent, score in sorted(scores.items(), key=lambda item: (-item[1], item[0])):
