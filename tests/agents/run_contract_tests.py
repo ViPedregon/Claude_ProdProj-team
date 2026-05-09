@@ -8,35 +8,39 @@ AGENTS = sorted((ROOT / 'agents').glob('*.md'))
 EXPECTED_AGENT_COUNT = 31
 CHECKS_PER_AGENT = 11
 
-assertion_count = 0
+def main() -> None:
+    assertion_count = 0
+
+    def check(condition: bool, message: str) -> None:
+        nonlocal assertion_count
+        assertion_count += 1
+        if not condition:
+            raise AssertionError(message)
+
+    if len(AGENTS) != EXPECTED_AGENT_COUNT:
+        raise AssertionError(f'expected {EXPECTED_AGENT_COUNT} agents, found {len(AGENTS)}')
+
+    for agent_path in AGENTS:
+        name = agent_path.stem
+        title = name.replace('-', ' ').title()
+        text = agent_path.read_text(encoding='utf-8')
+        memory_path = ROOT / 'agent-memory' / name / 'MEMORY.md'
+
+        check(text.startswith('---\n'), f'{name}: missing opening frontmatter fence')
+        check('\n---\n\n# ' in text, f'{name}: missing closing frontmatter fence')
+        check(f'name: {name}\n' in text, f'{name}: name mismatch')
+        check('role: scaffold-placeholder\n' in text, f'{name}: missing scaffold role')
+        check(f'memory_path: ../agent-memory/{name}/MEMORY.md\n' in text, f'{name}: memory path mismatch')
+        check('version: 0.1.0\n' in text, f'{name}: missing version field')
+        check(f'# {title}\n' in text, f'{name}: missing title heading')
+        check('## Mission\n' in text, f'{name}: missing mission section')
+        check('## Operating Protocol\n' in text, f'{name}: missing operating protocol section')
+        check('## Outputs\n' in text, f'{name}: missing outputs section')
+        check(memory_path.is_file(), f'{name}: missing memory scaffold')
+
+    expected_assertions = EXPECTED_AGENT_COUNT * CHECKS_PER_AGENT
+    print(f'contract tests passed: {assertion_count}/{expected_assertions} assertions')
 
 
-def check(condition: bool, message: str) -> None:
-    global assertion_count
-    assertion_count += 1
-    if not condition:
-        raise AssertionError(message)
-
-
-if len(AGENTS) != EXPECTED_AGENT_COUNT:
-    raise AssertionError(f'expected {EXPECTED_AGENT_COUNT} agents, found {len(AGENTS)}')
-for agent_path in AGENTS:
-    name = agent_path.stem
-    title = name.replace('-', ' ').title()
-    text = agent_path.read_text(encoding='utf-8')
-    memory_path = ROOT / 'agent-memory' / name / 'MEMORY.md'
-
-    check(text.startswith('---\n'), f'{name}: missing opening frontmatter fence')
-    check('\n---\n\n# ' in text, f'{name}: missing closing frontmatter fence')
-    check(f'name: {name}\n' in text, f'{name}: name mismatch')
-    check('role: scaffold-placeholder\n' in text, f'{name}: missing scaffold role')
-    check(f'memory_path: ../agent-memory/{name}/MEMORY.md\n' in text, f'{name}: memory path mismatch')
-    check('version: 0.1.0\n' in text, f'{name}: missing version field')
-    check(f'# {title}\n' in text, f'{name}: missing title heading')
-    check('## Mission\n' in text, f'{name}: missing mission section')
-    check('## Operating Protocol\n' in text, f'{name}: missing operating protocol section')
-    check('## Outputs\n' in text, f'{name}: missing outputs section')
-    check(memory_path.is_file(), f'{name}: missing memory scaffold')
-
-expected_assertions = EXPECTED_AGENT_COUNT * CHECKS_PER_AGENT
-print(f'contract tests passed: {assertion_count}/{expected_assertions} assertions')
+if __name__ == '__main__':
+    main()

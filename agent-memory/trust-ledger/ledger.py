@@ -52,11 +52,14 @@ def standings(entries: list[dict[str, object]]) -> None:
         if not isinstance(agent, str):
             print('warning: skipped verdict without a valid agent name', file=sys.stderr)
             continue
-        try:
-            score = float(value)
-        except TypeError:
+        if value is None:
+            print(f'warning: skipped verdict without a value for {agent}', file=sys.stderr)
+            continue
+        if not isinstance(value, (int, float, str)):
             print(f'warning: skipped verdict with invalid value type for {agent}: {value!r}', file=sys.stderr)
             continue
+        try:
+            score = float(value)
         except ValueError:
             print(f'warning: skipped unparseable verdict for {agent}: {value!r}', file=sys.stderr)
             continue
