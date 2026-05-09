@@ -1,0 +1,7 @@
+{
+  "hooks": {
+    "ShadowMind": [
+      "./hooks/shadow-observer.sh"
+    ]
+  }
+}

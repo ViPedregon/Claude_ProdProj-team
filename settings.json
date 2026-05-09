@@ -1,0 +1,18 @@
+{
+  "hooks": {
+    "SubagentStop": [
+      "./hooks/verify-agent-protocol.sh",
+      "./hooks/verify-signal-bus-persisted.sh",
+      "./hooks/auto-record-trust-verdict.sh"
+    ],
+    "PostToolUse": [
+      "./hooks/log-nexus-syscall.sh"
+    ],
+    "GitPreCommit": [
+      "./hooks/pre-commit-agent-contracts.sh"
+    ],
+    "PostHire": [
+      "./hooks/post-hire-verify.sh"
+    ]
+  }
+}
