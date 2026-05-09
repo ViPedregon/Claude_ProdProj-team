@@ -41,9 +41,17 @@ def show(entries: list[dict[str, object]]) -> None:
 def standings(entries: list[dict[str, object]]) -> None:
     scores: dict[str, float] = {}
     for entry in entries:
-        if entry['kind'] != 'verdict' or entry['value'] is None:
+        if not isinstance(entry, dict) or entry.get('kind') != 'verdict':
             continue
-        scores[entry['agent']] = scores.get(entry['agent'], 0.0) + float(entry['value'])
+        agent = entry.get('agent')
+        value = entry.get('value')
+        if not isinstance(agent, str):
+            continue
+        try:
+            score = float(value)
+        except (TypeError, ValueError):
+            continue
+        scores[agent] = scores.get(agent, 0.0) + score
     for agent, score in sorted(scores.items(), key=lambda item: (-item[1], item[0])):
         print(f'{agent}: {score}')
 
