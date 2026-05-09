@@ -55,7 +55,7 @@ def standings(entries: list[dict[str, object]]) -> None:
         try:
             score = float(value)
         except (TypeError, ValueError):
-            print(f'warning: skipped non-numeric verdict for {agent}', file=sys.stderr)
+            print(f'warning: skipped non-numeric verdict for {agent}: {value!r}', file=sys.stderr)
             continue
         scores[agent] = scores.get(agent, 0.0) + score
     for agent, score in sorted(scores.items(), key=lambda item: (-item[1], item[0])):

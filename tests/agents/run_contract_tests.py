@@ -6,6 +6,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 AGENTS = sorted((ROOT / 'agents').glob('*.md'))
 EXPECTED_AGENT_COUNT = 31
+CHECKS_PER_AGENT = 11
 
 assertion_count = 0
 
@@ -37,5 +38,5 @@ for agent_path in AGENTS:
     check('## Outputs\n' in text, f'{name}: missing outputs section')
     check(memory_path.is_file(), f'{name}: missing memory scaffold')
 
-expected_assertions = EXPECTED_AGENT_COUNT * 11
+expected_assertions = EXPECTED_AGENT_COUNT * CHECKS_PER_AGENT
 print(f'contract tests passed: {assertion_count}/{expected_assertions} assertions')
