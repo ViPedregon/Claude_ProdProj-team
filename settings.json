@@ -1,0 +1,11 @@
+{
+  "hooks": {
+    "SubagentStop": [
+      { "command": "bash .claude/hooks/verify-agent-protocol.sh" },
+      { "command": "bash .claude/hooks/verify-signal-bus-persisted.sh" }
+    ],
+    "PostToolUse": [
+      { "matcher": "SendMessage", "command": "bash .claude/hooks/log-nexus-syscall.sh" }
+    ]
+  }
+}
